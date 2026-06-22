@@ -8,6 +8,7 @@ export function useRegister() {
   const [email, setEmail] = useState(savedEmail || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [id, setId] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,6 +31,7 @@ export function useRegister() {
     try {
       const response = await apiClient.post("/api/auth/register", {
         email: email.trim(),
+        id: id.trim(),
         password: password
       });
 
@@ -65,12 +67,14 @@ export function useRegister() {
 
   return {
     email,
+    id,
     password,
     confirmPassword,
     error,
     success,
     loading,
     setEmail,
+    setId,
     setPassword,
     setConfirmPassword,
     handleClearError,

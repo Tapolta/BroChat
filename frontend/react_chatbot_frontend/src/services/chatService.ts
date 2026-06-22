@@ -1,8 +1,22 @@
 import apiClient from '../api/axios';
 
 export const chatService = {
-  sendMessage: async (message: string) => {
-    const response = await apiClient.post('/api/chat/', { message });
+  sendMessageGuest: async (message: string) => {
+    const response = await apiClient.post('/api/chat/guest', { message });
     return response.data;
+  },
+
+  sendMessageMember: async (message: string, token: string) => {
+    const response = await apiClient.post(
+      '/api/chat/member', 
+      { message },
+      {
+        headers: {
+          'X-Session-Key': token,
+        },
+      }
+    );
+    
+    return response.data; 
   }
 };

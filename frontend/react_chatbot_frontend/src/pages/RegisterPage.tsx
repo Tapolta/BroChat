@@ -4,12 +4,14 @@ import { useRegister } from "../hooks/useRegister";
 export default function RegisterPage() {
   const {
     email,
+    id,
     password,
     confirmPassword,
     error,
     success,
     loading,
     setEmail,
+    setId,
     setPassword,
     setConfirmPassword,
     handleClearError,
@@ -44,8 +46,8 @@ export default function RegisterPage() {
         )}
 
         <RegisterForm 
-          formData={{ email, password, confirmPassword, loading, errorExists: !!error }}
-          actions={{ setEmail, setPassword, setConfirmPassword, onClearError: handleClearError, onSubmit: handleSubmit }}
+          formData={{ email, id, password, confirmPassword, loading, errorExists: !!error }}
+          actions={{ setEmail, setId, setPassword, setConfirmPassword, onClearError: handleClearError, onSubmit: handleSubmit }}
         />
       </div>
     </div>

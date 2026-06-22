@@ -47,36 +47,46 @@ function ChatPage() {
 
         <main className="flex-1 flex flex-col bg-white overflow-hidden">
           
-          <div className="flex-1 overflow-y-auto">
-            <div className="max-w-3xl mx-auto flex flex-col gap-8 px-4 pt-12 pb-8">
-              {messages.length === 0 ? (
-                <div className="flex h-[60vh] flex-col items-center justify-center text-center gap-2">
+          {messages.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center px-4">
+              <div className="w-full max-w-3xl flex flex-col items-center gap-6">
+                <div className="text-center">
                   <h1 className="text-2xl font-bold text-gray-800">Ada yang bisa dibantu?</h1>
-                  <p className="text-gray-400 text-sm">Mulai obrolan pertamamu dengan BroChat.</p>
+                  <p className="text-gray-400 text-sm mt-2">Mulai obrolan pertamamu dengan BroChat.</p>
                 </div>
-              ) : (
-                <MessageList messages={messages} />
-              )}
-
-              {isLoading && (
-                <div className="flex w-full justify-start mt-4">
-                  <div className="flex gap-1 items-center px-2 py-1 bg-gray-50 rounded-lg border border-gray-100">
-                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                    <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
-                  </div>
+                
+                <div className="w-full">
+                  <TextInput onSendMessage={sendMessage} isLoading={isLoading} />
                 </div>
-              )}
-
-              <div ref={messagesEndRef} />
+              </div>
             </div>
-          </div>
+          ) : (
+            <>
+              <div className="flex-1 overflow-y-auto">
+                <div className="max-w-3xl mx-auto flex flex-col gap-8 px-4 pt-12 pb-8">
+                  <MessageList messages={messages} />
 
-          <div className="w-full bg-white pt-4 pb-6 shrink-0 border-t border-gray-50">
-            <div className="max-w-3xl mx-auto px-4">
-              <TextInput onSendMessage={sendMessage} isLoading={isLoading} />
-            </div>
-          </div>
+                  {isLoading && (
+                    <div className="flex w-full justify-start mt-4">
+                      <div className="flex gap-1 items-center px-2 py-1 bg-gray-50 rounded-lg border border-gray-100">
+                        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                        <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+                      </div>
+                    </div>
+                  )}
+
+                  <div ref={messagesEndRef} />
+                </div>
+              </div>
+
+              <div className="w-full bg-white pt-4 pb-6 shrink-0 border-t border-gray-50">
+                <div className="max-w-3xl mx-auto px-4">
+                  <TextInput onSendMessage={sendMessage} isLoading={isLoading} />
+                </div>
+              </div>
+            </>
+          )}
 
         </main>
       </div>

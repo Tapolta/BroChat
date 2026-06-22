@@ -36,7 +36,7 @@ export function useLogin() {
       const { session_key, message } = response.data;
       console.log(message, "Key kamu:", session_key);
 
-      localStorage.setItem("user_session_key", session_key);
+      storageManager.setSessionKey(session_key.trim());
       navigate("/");
     } catch (err: any) {
       console.error("Login Error:", err);
