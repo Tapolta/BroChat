@@ -1,13 +1,11 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
-import ChatPage from './pages/ChatPage.tsx'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { RouterProvider } from 'react-router-dom'
+import { router } from './router'
+import './index.css' // 👈 Pastikan file CSS utama kamu (yang berisi @tailwind) di-import di sini
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    {/* <App /> */}
-
-    <ChatPage />
-  </StrictMode>,
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>
 )
