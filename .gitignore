@@ -1,0 +1,65 @@
+# ==========================================
+# 🐍 BACKEND (Python / FastAPI)
+# ==========================================
+
+# --- Python Cache ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Virtual Environment ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- Environment Variables & Secrets ---
+.env
+*.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# --- Data & Logs ---
+data/
+*.log
+*.db
+*.sqlite3
+
+
+# ==========================================
+# ⚛️ FRONTEND (Node / React / Vite)
+# ==========================================
+
+# --- Dependencies ---
+node_modules/
+jspm_packages/
+
+# --- Build Outputs ---
+dist/
+dist-ssr/
+build/
+out/
+.next/
+
+# --- TypeScript & Vite Cache ---
+.vite/
+.eslintcache
+*.tsbuildinfo
+
+
+# ==========================================
+# 🛠️ GENERAL / IDE & EDITORS
+# ==========================================
+
+# --- IDE / Code Editor Config ---
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.DS_Store
+Thumbs.db
