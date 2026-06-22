@@ -3,6 +3,7 @@ import MessageList from "../components/MessageList";
 import TextInput from "../components/TextInput";
 import { useChat } from "../hooks/useChat";
 import Sidebar from "../components/sidebar/Sidebar";
+import SidebarUser from "../components/sidebar/SidebarUser";
 
 function ChatPage() {
   const { messages, isLoading, sendMessage } = useChat();
@@ -33,7 +34,9 @@ function ChatPage() {
     <div className="flex flex-col h-screen w-full bg-white font-sans overflow-hidden">
       <div className="flex flex-1 overflow-hidden relative">
         
-        <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+        <Sidebar isOpen={isSidebarOpen}>
+          <SidebarUser isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+        </Sidebar>
 
         {isSidebarOpen && (
           <div 

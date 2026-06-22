@@ -1,7 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom';
 import ChatPage from './pages/ChatPage';
-import AdminLogin from './pages/AdminLogin';
-import AdminDashboard from './pages/AdminDashboard';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminDashboardv1 from './pages/admin/AdminDashboardv1';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 export const router = createBrowserRouter([
   {
@@ -13,7 +16,19 @@ export const router = createBrowserRouter([
     element: <AdminLogin />,
   },
   {
+    path: '/admin/dashboardv1',
+    element: <AdminDashboardv1 />,
+  },
+  {
     path: '/admin/dashboard',
     element: <AdminDashboard />,
+  },
+  {
+    path: '/verify-login',
+    element: <LoginPage />,
+  },
+  {
+    path: '/register',
+    element: <RegisterPage />,
   }
 ]);

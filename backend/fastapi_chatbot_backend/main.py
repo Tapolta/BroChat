@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api import chat
+from api import auth
 
 from dependencies import limiter
 from slowapi import _rate_limit_exceeded_handler
@@ -19,6 +20,7 @@ app.add_middleware(
 )
 
 app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
+app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
 
 @app.get("/")
 async def root():

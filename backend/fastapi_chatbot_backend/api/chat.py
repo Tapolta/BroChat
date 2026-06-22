@@ -49,7 +49,7 @@
 #             raise HTTPException(status_code=500, detail=f"Terjadi kesalahan pada server: {str(e)}")
 
 from fastapi import APIRouter, Request
-from schemas.chat import ChatRequest, ChatResponse
+from schemas.schemas import ChatRequest, ChatResponse
 from dependencies import limiter
 from services.groq_service import call_groq_api
 from services.knowledge_service import load_context

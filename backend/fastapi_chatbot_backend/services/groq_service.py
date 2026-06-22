@@ -11,7 +11,7 @@ async def call_groq_api(message: str) -> str:
   payload = {
     "model": "llama-3.1-8b-instant",
     "messages": [{"role": "user", "content": message}],
-    "max_tokens": 200,
+    "max_tokens": 1000,
     "temperature": 0.7
   }
 
