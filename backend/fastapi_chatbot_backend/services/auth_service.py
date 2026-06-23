@@ -6,16 +6,28 @@ from schemas.schemas import UserRegister, UserLogin, RegisterResponse, LoginResp
 
 def register_new_user(user_data: UserRegister) -> RegisterResponse:
   target_email = user_data.email.strip().lower()
-  user_id = user_data.id.strip()
+  target_id = user_data.id.strip()
   
-  email_exists = any(user["email"] == target_email for user in DUMMY_USERS_DB)
-  if email_exists:
-    raise HTTPException(
-      status_code=status.HTTP_409_CONFLICT,
-      detail="Email sudah terdaftar/terpakai. Silakan gunakan email lain."
-    )
+  id_or_email_exists = any(
+    user["id"] == target_id or user["email"] == target_email 
+    for user in DUMMY_USERS_DB
+  )
+  
+  if id_or_email_exists:
+    is_id_dup = any(user["id"] == target_id for user in DUMMY_USERS_DB)
+    
+    if is_id_dup:
+      raise HTTPException(
+        status_code=status.HTTP_409_CONFLICT,
+        detail="ID sudah terdaftar. Silakan gunakan ID lain."
+      )
+    else:
+      raise HTTPException(
+        status_code=status.HTTP_409_CONFLICT,
+        detail="Email sudah terdaftar. Silakan gunakan email lain."
+      )
       
-  new_user = {"email": target_email, "password": user_data.password, "id": user_id}
+  new_user = {"email": target_email, "password": user_data.password, "id": target_id}
   DUMMY_USERS_DB.append(new_user)
   
   return RegisterResponse(status="success", message="Registrasi berhasil!")

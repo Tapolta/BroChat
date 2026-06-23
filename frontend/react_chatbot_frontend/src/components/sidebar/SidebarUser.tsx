@@ -111,7 +111,6 @@ export default function SidebarUser({ isOpen, setIsOpen }: SidebarUserProps) {
           </div>
 
           <div className="mt-auto pt-2 border-t border-gray-200/60">
-            {/* 3. UBAH ONCLICK UNTUK MEMBUKA MODAL SETTINGS */}
             <SettingsButton onClick={() => setIsSettingsOpen(true)} />
           </div>
 
@@ -120,7 +119,6 @@ export default function SidebarUser({ isOpen, setIsOpen }: SidebarUserProps) {
             onClose={() => setIsLoginOpen(false)} 
           />
 
-          {/* 4. PASANG PROPS SETTINGS MODAL SECARA LENGKAP */}
           <SettingsModal
             open={isSettingsOpen}
             onClose={() => setIsSettingsOpen(false)}
@@ -131,8 +129,8 @@ export default function SidebarUser({ isOpen, setIsOpen }: SidebarUserProps) {
                 : null
             }
             onLoginTrigger={() => {
-              setIsSettingsOpen(false); // Tutup settings dulu
-              setIsLoginOpen(true);     // Buka login modal
+              setIsSettingsOpen(false);
+              setIsLoginOpen(true);
             }}
             onLogoutTrigger={handleLogout}
           />

@@ -51,7 +51,7 @@ export function useRegister() {
         const serverMessage = err.response.data?.detail || err.response.data?.message;
 
         if (status === 400 || status === 409 || serverMessage?.toLowerCase().includes("email")) {
-          setError("Email ini sudah terdaftar/terpakai. Silakan gunakan email lain.");
+          setError("Email/id sudah terdaftar. Silakan gunakan email/id lain.");
         } else {
           setError(serverMessage || "Gagal mendaftar. Silakan coba beberapa saat lagi.");
         }

@@ -19,21 +19,22 @@ async def get_current_user_profile(
   current_user: dict = Depends(get_authenticated_user)
 ):
   user_chats = []
+  current_user_id = current_user["id"]
   
   for chat_id, chat_data in IN_MEMORY_DB.items():
-    if chat_data.get("user_id") == current_user["id"]:
+    if chat_data.get("user_id") != current_user_id:
+      continue
         
-      first_message = "Chat kosong"
-      if "messages" in chat_data and len(chat_data["messages"]) > 0:
-        first_message = chat_data["messages"][0]["content"]
-          
-      user_chats.insert(0, {
-        "chatId": chat_id,
-        "title": first_message
-      })
+    messages = chat_data.get("messages", [])
+    title = messages[0]["content"] if messages else "Chat kosong"
+        
+    user_chats.insert(0, {
+      "chatId": chat_id,
+      "title": title
+    })
   
   return {
-    "id": current_user["id"],
+    "id": current_user_id,
     "email": current_user["email"],
     "chats": user_chats
   }

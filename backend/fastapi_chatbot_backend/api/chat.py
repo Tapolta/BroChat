@@ -68,25 +68,25 @@ async def chat_as_guest(chat_data: ChatRequest, request: Request):
 @router.post("/member", response_model=NewChatResponse)
 @limiter.limit("10/minute")
 async def create_new_chat_member(
-    chat_data: ChatRequest, 
-    request: Request,
-    user: dict = Depends(get_authenticated_user)
+  chat_data: ChatRequest, 
+  request: Request,
+  user: dict = Depends(get_authenticated_user)
 ):
-    new_chat_id = str(uuid.uuid4())
-    
-    user_message = {"role": "user", "content": chat_data.message}
-    
-    IN_MEMORY_DB[new_chat_id] = {
-      "user_id": user["id"],
-      "messages": [user_message]
-    }
-    
-    reply_text = await call_groq_api_member(IN_MEMORY_DB[new_chat_id]["messages"], user=user)
-    
-    ai_message = {"role": "assistant", "content": reply_text}
-    IN_MEMORY_DB[new_chat_id]["messages"].append(ai_message)
-    
-    return {"chatId": new_chat_id, "reply": reply_text}
+  new_chat_id = str(uuid.uuid4())
+  
+  user_message = {"role": "user", "content": chat_data.message}
+  
+  IN_MEMORY_DB[new_chat_id] = {
+    "user_id": user["id"],
+    "messages": [user_message]
+  }
+  
+  reply_text = await call_groq_api_member(IN_MEMORY_DB[new_chat_id]["messages"], user=user)
+  
+  ai_message = {"role": "assistant", "content": reply_text}
+  IN_MEMORY_DB[new_chat_id]["messages"].append(ai_message)
+  
+  return {"chatId": new_chat_id, "reply": reply_text}
 
 
 @router.post("/member/{chat_id}", response_model=ChatResponse)
@@ -100,7 +100,6 @@ async def reply_existing_chat(
   if chat_id not in IN_MEMORY_DB:
     raise HTTPException(status_code=404, detail="Chat tidak ditemukan atau sudah terhapus dari memory")
       
-  # LOGIKA KEAMANAN: Cek apakah user yang login adalah pemilik chat ini
   if IN_MEMORY_DB[chat_id]["user_id"] != user["id"]:
     raise HTTPException(status_code=403, detail="Akses ditolak: Anda bukan pemilik riwayat obrolan ini.")
       
@@ -123,7 +122,6 @@ async def get_chat_history(
   if chat_id not in IN_MEMORY_DB:
     raise HTTPException(status_code=404, detail="Chat tidak ditemukan")
       
-  # LOGIKA KEAMANAN: Cek kepemilikan saat menarik riwayat chat lama
   if IN_MEMORY_DB[chat_id]["user_id"] != user["id"]:
     raise HTTPException(status_code=403, detail="Akses ditolak: Anda bukan pemilik riwayat obrolan ini.")
       
