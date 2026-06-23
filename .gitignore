@@ -22,7 +22,6 @@ ENV/
 .env.production.local
 
 # --- Data & Logs ---
-data/
 *.log
 *.db
 *.sqlite3
