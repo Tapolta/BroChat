@@ -40,11 +40,6 @@ export default function SidebarUser({ isOpen, setIsOpen }: SidebarUserProps) {
       setIsAuthenticated(true);
     } catch (error: any) {
       console.error("Sesi tidak valid:", error);
-      
-      if (error?.status === 401 || error?.response?.status === 401) {
-        storageManager.clearSessionKey();
-      }
-      
       setIsAuthenticated(false);
       setUser(null);
     } finally {
@@ -71,7 +66,6 @@ export default function SidebarUser({ isOpen, setIsOpen }: SidebarUserProps) {
   return (
     <>
       <SidebarHeader isOpen={isOpen} onToggle={toggleSidebar} />
-
       {isOpen && (
         <div className="flex flex-col flex-1 p-3 overflow-y-auto justify-between">
           <div className="flex flex-col gap-2 flex-1">
@@ -80,6 +74,7 @@ export default function SidebarUser({ isOpen, setIsOpen }: SidebarUserProps) {
                 <div className="px-2 py-1 text-xs text-gray-500 truncate">
                   Halo, <span className="font-semibold text-gray-700">{user?.email.split('@')[0]}</span>
                 </div>
+
                 <NewChatButton onClick={() => console.log("New chat created")} />
                 <ChatHistoryList items={chatHistory} />
               </>

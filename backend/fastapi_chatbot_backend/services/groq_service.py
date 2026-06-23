@@ -1,8 +1,9 @@
 import httpx
 from fastapi import HTTPException
+from typing import List, Dict
 from core.config import settings
 
-async def call_groq_api(message: str) -> str:
+async def _execute_groq_call(messages: List[Dict[str, str]]) -> str:
   headers = {
     "Authorization": f"Bearer {settings.GROQ_API_KEY}",
     "Content-Type": "application/json"
@@ -10,16 +11,21 @@ async def call_groq_api(message: str) -> str:
   
   payload = {
     "model": "llama-3.1-8b-instant",
-    "messages": [{"role": "user", "content": message}],
+    "messages": messages,
     "max_tokens": 1000,
     "temperature": 0.7
   }
 
   async with httpx.AsyncClient() as client:
     try:
-      response = await client.post(settings.GROQ_ENDPOINT, json=payload, headers=headers, timeout=30.0)
+      response = await client.post(
+        settings.GROQ_ENDPOINT, 
+        json=payload, 
+        headers=headers, 
+        timeout=30.0
+      )
       response.raise_for_status()
-      
+        
       data = response.json()
       return data["choices"][0]["message"]["content"]
         
@@ -32,7 +38,57 @@ async def call_groq_api(message: str) -> str:
       )
     except Exception as e:
       print(f"Sistem error: {e}")
-      raise HTTPException(status_code=500, detail=f"Terjadi kesalahan pada server: {str(e)}")
+      raise HTTPException(
+        status_code=500, 
+        detail=f"Terjadi kesalahan pada server: {str(e)}"
+      )
+
+
+async def call_groq_api_guest(message: str) -> str:
+  system_prompt = (
+    "Kamu adalah AI Asisten Kampus. Jawablah pertanyaan umum dari "
+    "calon mahasiswa atau tamu dengan ramah, informatif, dan jelas."
+  )
+  
+  messages_to_send = [
+    {"role": "system", "content": system_prompt},
+    {"role": "user", "content": message}
+  ]
+  
+  return await _execute_groq_call(messages=messages_to_send)
+
+
+async def call_groq_api_member(messages_history: List[Dict[str, str]], user: dict) -> str:
+  """
+  messages_history: List berupa dictionary, contoh:
+  [
+    {"role": "user", "content": "Halo"},
+    {"role": "assistant", "content": "Hai! Ada yang bisa saya bantu?"},
+    {"role": "user", "content": "Aku mau tanya soal KRS"}
+  ]
+  """
+  email = user.get("email", "mahasiswa@kampus.com")
+  user_id = user.get("id", "-")
+
+  nama = email.split("@")[0].capitalize() if "@" in email else "Mahasiswa"
+
+  system_prompt = f"""
+  Kamu adalah AI Asisten Akademik yang cerdas dan suportif. 
+  Kamu sedang berbicara dengan {nama}. 
+  
+  Informasi pengguna saat ini:
+  - Nama Panggilan: {nama}
+  - Email: {email}
+  - ID Pengguna: {user_id}
+  
+  Aturan merespon:
+  1. Sapa atau panggil nama '{nama}' sesekali dalam percakapan agar terasa akrab dan personal.
+  2. Berikan jawaban yang ramah, informatif, dan membantu seputar perkuliahan, jadwal, atau informasi kampus.
+  """
+  
+  messages_to_send = [{"role": "system", "content": system_prompt}] + messages_history
+  
+  return await _execute_groq_call(messages=messages_to_send)
     
 # import httpx
 # from fastapi import HTTPException

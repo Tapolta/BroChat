@@ -8,7 +8,6 @@ import SidebarUser from "../components/sidebar/SidebarUser";
 function ChatPage() {
   const { messages, isLoading, sendMessage } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   useEffect(() => {
@@ -46,7 +45,6 @@ function ChatPage() {
         )}
 
         <main className="flex-1 flex flex-col bg-white overflow-hidden">
-          
           {messages.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center px-4">
               <div className="w-full max-w-3xl flex flex-col items-center gap-6">
@@ -87,7 +85,6 @@ function ChatPage() {
               </div>
             </>
           )}
-
         </main>
       </div>
     </div>

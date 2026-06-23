@@ -8,7 +8,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: '/:chatId?', 
     element: <ChatPage />,
   },
   {

@@ -1,9 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api import chat
-from api import auth
-
-from dependencies import limiter
+from api import chat, auth
+from dependencies.cloudflared_dep import limiter
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
