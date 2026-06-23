@@ -11,3 +11,14 @@ export const authService = {
     return response.data;
   },
 };
+
+export interface ChatHistoryItem {
+  chatId: string;
+  title: string;
+}
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  chats: ChatHistoryItem[];
+}

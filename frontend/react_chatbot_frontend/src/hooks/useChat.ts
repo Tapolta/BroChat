@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { chatService } from '../services/chatService';
 import { storageManager } from '../utils/storage';
+import { triggerSidebarRefresh } from './useChatSync';
 
 export type Message = {
   role: 'user' | 'assistant';
@@ -96,6 +97,10 @@ export function useChat() {
       
       const aiMessage: Message = { role: 'assistant', content: data.reply };
       setMessages((prev) => [...prev, aiMessage]);
+
+      if (token) {
+        triggerSidebarRefresh();
+      }
       
     } catch (error: any) {
       if (error?.name === 'CanceledError' || error?.name === 'AbortError') return;

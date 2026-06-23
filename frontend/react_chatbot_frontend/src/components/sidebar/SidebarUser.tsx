@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import GuestSection from './GuestSection';
-import LoginModal from '../login/LoginModal';
 import SidebarHeader from './SidebarHeader';
 import NewChatButton from './NewChatButton';
 import ChatHistoryList from './ChatHistoryList';
 import SettingsButton from './SettingsButton';
 import { storageManager } from '../../utils/storage';
 import { authService, type UserProfile } from '../../services/authService';
+import { useSidebarRefreshListener } from '../../hooks/useChatSync';
+import LoginModal from '../modal/LoginModal';
+import SettingsModal from '../modal/SettingsModal';
 
 interface SidebarUserProps {
   isOpen: boolean;
@@ -14,14 +17,16 @@ interface SidebarUserProps {
 }
 
 export default function SidebarUser({ isOpen, setIsOpen }: SidebarUserProps) {
+  const navigate = useNavigate();
+
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [chatHistory] = useState<string[]>([
-    "AI Project", "Learning React", "Machine Learning"
-  ]);
-
+  
   const checkLoginData = async () => {
     const key = storageManager.getSessionKey();
     
@@ -34,7 +39,7 @@ export default function SidebarUser({ isOpen, setIsOpen }: SidebarUserProps) {
 
     try {
       setIsLoading(true);
-      const userData = await authService.getProfile();
+      const userData = await authService.getProfile(); 
       
       setUser(userData);
       setIsAuthenticated(true);
@@ -51,8 +56,27 @@ export default function SidebarUser({ isOpen, setIsOpen }: SidebarUserProps) {
     checkLoginData();
   }, [isLoginOpen]); 
 
+  useSidebarRefreshListener(() => {
+    if (storageManager.getSessionKey()) {
+      checkLoginData();
+    }
+  });
+
   const toggleSidebar = () => setIsOpen(!isOpen);
   const handleLogin = () => setIsLoginOpen(true);
+
+  const handleNewChat = () => {
+    navigate('/', { replace: true });
+  };
+
+  const handleLogout = () => {
+    storageManager.clearSessionKey();
+    storageManager.clearEmail();
+    setIsAuthenticated(false);
+    setUser(null);
+    setIsSettingsOpen(false);
+    navigate('/', { replace: true });
+  };
 
   if (isLoading && isOpen) {
     return (
@@ -75,8 +99,9 @@ export default function SidebarUser({ isOpen, setIsOpen }: SidebarUserProps) {
                   Halo, <span className="font-semibold text-gray-700">{user?.email.split('@')[0]}</span>
                 </div>
 
-                <NewChatButton onClick={() => console.log("New chat created")} />
-                <ChatHistoryList items={chatHistory} />
+                <NewChatButton onClick={handleNewChat} />
+                
+                <ChatHistoryList items={user?.chats || []} />
               </>
             ) : (
               <div className="flex items-end h-full mb-4">
@@ -86,12 +111,30 @@ export default function SidebarUser({ isOpen, setIsOpen }: SidebarUserProps) {
           </div>
 
           <div className="mt-auto pt-2 border-t border-gray-200/60">
-            <SettingsButton onClick={() => console.log("Open settings")} />
+            {/* 3. UBAH ONCLICK UNTUK MEMBUKA MODAL SETTINGS */}
+            <SettingsButton onClick={() => setIsSettingsOpen(true)} />
           </div>
 
           <LoginModal 
             isOpen={isLoginOpen} 
             onClose={() => setIsLoginOpen(false)} 
+          />
+
+          {/* 4. PASANG PROPS SETTINGS MODAL SECARA LENGKAP */}
+          <SettingsModal
+            open={isSettingsOpen}
+            onClose={() => setIsSettingsOpen(false)}
+            isLoggedIn={isAuthenticated}
+            user={
+              user 
+                ? { name: user.email.split('@')[0], email: user.email } 
+                : null
+            }
+            onLoginTrigger={() => {
+              setIsSettingsOpen(false); // Tutup settings dulu
+              setIsLoginOpen(true);     // Buka login modal
+            }}
+            onLogoutTrigger={handleLogout}
           />
         </div>
       )}

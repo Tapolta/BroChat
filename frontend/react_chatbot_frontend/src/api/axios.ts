@@ -1,15 +1,26 @@
 import axios from 'axios';
 import { storageManager } from '../utils/storage';
 
-const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  timeout: 10000, 
+const BASE_URL = import.meta.env.VITE_API_URL;
+const TIMEOUT = 10000;
+
+export const publicClient = axios.create({
+  baseURL: BASE_URL,
+  timeout: TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-apiClient.interceptors.request.use(
+export const authClient = axios.create({
+  baseURL: BASE_URL,
+  timeout: TIMEOUT,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+authClient.interceptors.request.use(
   (config) => {
     const token = storageManager.getSessionKey();
     if (token) {
@@ -17,27 +28,31 @@ apiClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-apiClient.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+authClient.interceptors.response.use(
+  (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      console.warn("Sesi kedaluwarsa (401). Membersihkan storage dan me-refresh halaman...");
+      console.warn("Sesi Member kedaluwarsa (401). Membersihkan storage...");
       
       storageManager.clearSessionKey();
       storageManager.clearEmail();
       
-      window.location.reload();
+      const currentPath = window.location.pathname;
+      
+      if (currentPath && currentPath !== '/') {
+        console.warn("Mengalihkan member ke halaman utama...");
+        window.location.href = '/';
+      } else {
+        console.warn("Member sudah di root, me-refresh halaman...");
+        window.location.reload();
+      }
     }
     
     return Promise.reject(error);
   }
 );
 
-export default apiClient;
+export default authClient;

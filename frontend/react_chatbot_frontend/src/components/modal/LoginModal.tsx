@@ -1,7 +1,7 @@
-import BaseModal from "../BaseModal";
-import SocialLoginGroup from "./SocialLoginGroup";
-import Divider from "./Divider";
-import EmailLoginForm from "./EmailLoginForm";
+import Divider from "../login/Divider";
+import EmailLoginForm from "../login/EmailLoginForm";
+import SocialLoginGroup from "../login/SocialLoginGroup";
+import BaseModal from "../modal/BaseModal";
 
 interface LoginModalProps {
   isOpen: boolean;

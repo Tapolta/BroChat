@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import apiClient from "../api/axios";
 import { storageManager } from "../utils/storage";
+import { publicClient } from "../api/axios";
 
 export function useLogin() {
   const [email, setEmail] = useState("");
@@ -28,7 +28,7 @@ export function useLogin() {
     setLoading(true);
 
     try {
-      const response = await apiClient.post("/api/auth/login", {
+      const response = await publicClient.post("/api/auth/login", {
         email: email.trim(),
         password: password,
       });

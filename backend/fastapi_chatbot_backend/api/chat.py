@@ -48,10 +48,9 @@
 #             print(f"Sistem error: {e}")
 #             raise HTTPException(status_code=500, detail=f"Terjadi kesalahan pada server: {str(e)}")
 
-from http.client import HTTPException
 import uuid
+from fastapi import APIRouter, Request, Depends, HTTPException 
 from dependencies.auth_dep import get_authenticated_user
-from fastapi import APIRouter, Request, Depends
 from schemas.schemas import ChatHistoryResponse, ChatRequest, ChatResponse, NewChatResponse
 from dependencies.cloudflared_dep import limiter
 from services.groq_service import call_groq_api_guest, call_groq_api_member
@@ -77,12 +76,15 @@ async def create_new_chat_member(
     
     user_message = {"role": "user", "content": chat_data.message}
     
-    IN_MEMORY_DB[new_chat_id] = [user_message]
+    IN_MEMORY_DB[new_chat_id] = {
+      "user_id": user["id"],
+      "messages": [user_message]
+    }
     
-    reply_text = await call_groq_api_member(IN_MEMORY_DB[new_chat_id], user=user)
+    reply_text = await call_groq_api_member(IN_MEMORY_DB[new_chat_id]["messages"], user=user)
     
     ai_message = {"role": "assistant", "content": reply_text}
-    IN_MEMORY_DB[new_chat_id].append(ai_message)
+    IN_MEMORY_DB[new_chat_id]["messages"].append(ai_message)
     
     return {"chatId": new_chat_id, "reply": reply_text}
 
@@ -98,13 +100,17 @@ async def reply_existing_chat(
   if chat_id not in IN_MEMORY_DB:
     raise HTTPException(status_code=404, detail="Chat tidak ditemukan atau sudah terhapus dari memory")
       
+  # LOGIKA KEAMANAN: Cek apakah user yang login adalah pemilik chat ini
+  if IN_MEMORY_DB[chat_id]["user_id"] != user["id"]:
+    raise HTTPException(status_code=403, detail="Akses ditolak: Anda bukan pemilik riwayat obrolan ini.")
+      
   user_message = {"role": "user", "content": chat_data.message}
-  IN_MEMORY_DB[chat_id].append(user_message)
+  IN_MEMORY_DB[chat_id]["messages"].append(user_message)
   
-  reply_text = await call_groq_api_member(IN_MEMORY_DB[chat_id], user=user)
+  reply_text = await call_groq_api_member(IN_MEMORY_DB[chat_id]["messages"], user=user)
   
   ai_message = {"role": "assistant", "content": reply_text}
-  IN_MEMORY_DB[chat_id].append(ai_message)
+  IN_MEMORY_DB[chat_id]["messages"].append(ai_message)
   
   return {"reply": reply_text}
 
@@ -117,4 +123,8 @@ async def get_chat_history(
   if chat_id not in IN_MEMORY_DB:
     raise HTTPException(status_code=404, detail="Chat tidak ditemukan")
       
-  return {"chatId": chat_id, "messages": IN_MEMORY_DB[chat_id]}
+  # LOGIKA KEAMANAN: Cek kepemilikan saat menarik riwayat chat lama
+  if IN_MEMORY_DB[chat_id]["user_id"] != user["id"]:
+    raise HTTPException(status_code=403, detail="Akses ditolak: Anda bukan pemilik riwayat obrolan ini.")
+      
+  return {"chatId": chat_id, "messages": IN_MEMORY_DB[chat_id]["messages"]}
