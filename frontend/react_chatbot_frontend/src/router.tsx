@@ -5,6 +5,7 @@ import AdminDashboardv1 from './pages/admin/AdminDashboardv1';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminAiSettings from './pages/admin/AdminAISetting';
 
 export const router = createBrowserRouter([
   {
@@ -30,5 +31,9 @@ export const router = createBrowserRouter([
   {
     path: '/register',
     element: <RegisterPage />,
+  },
+  {
+    path: '/admin/dashboard/ai-settings',
+    element: <AdminAiSettings />
   }
 ]);

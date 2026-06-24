@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LayoutDashboard, Bot } from 'lucide-react';
 import SidebarHeader from './SidebarHeader';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface SidebarAdminProps {
   isOpen: boolean;
@@ -10,7 +11,20 @@ interface SidebarAdminProps {
 export default function SidebarAdmin({ isOpen, setIsOpen }: SidebarAdminProps) {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'ai-settings'>('dashboard');
   const toggleSidebar = () => setIsOpen(!isOpen);
+  const location = useLocation();
+  const navigate = useNavigate();
 
+  useEffect(() => {
+  switch (location.pathname) {
+    case '/admin/dashboard/ai-settings':
+      setActiveTab('ai-settings');
+      break;
+    default:
+      setActiveTab('dashboard');
+      break;
+  }
+}, [location.pathname]);
+  
   return (
     <>
       <SidebarHeader isOpen={isOpen} onToggle={toggleSidebar} />
@@ -20,7 +34,10 @@ export default function SidebarAdmin({ isOpen, setIsOpen }: SidebarAdminProps) {
           <nav className="flex flex-col gap-1.5">
             
             <button
-              onClick={() => setActiveTab('dashboard')}
+              onClick={() => {
+                setActiveTab('dashboard');
+                navigate('/admin/dashboard/');
+              }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 ${
                 activeTab === 'dashboard'
                   ? 'bg-black/[0.06] text-gray-900 font-semibold'
@@ -37,7 +54,10 @@ export default function SidebarAdmin({ isOpen, setIsOpen }: SidebarAdminProps) {
 
             {/* Tombol AI Settings */}
             <button
-              onClick={() => setActiveTab('ai-settings')}
+              onClick={() => {
+                setActiveTab('ai-settings')
+                navigate('/admin/dashboard/ai-settings');
+              }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 ${
                 activeTab === 'ai-settings'
                   ? 'bg-black/[0.06] text-gray-900 font-semibold'
